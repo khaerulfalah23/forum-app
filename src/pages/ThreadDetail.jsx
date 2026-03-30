@@ -10,7 +10,14 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, MessageSquare, Calendar, Hash, User2 } from 'lucide-react';
+import {
+  Loader2,
+  MessageSquare,
+  Calendar,
+  Hash,
+  User2,
+  AlertCircle,
+} from 'lucide-react';
 
 export function ThreadDetail() {
   const { threadId } = useParams();
@@ -38,16 +45,29 @@ export function ThreadDetail() {
     );
   }
 
-  if (error || !thread) {
+  if (error) {
     return (
-      <div className='bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-lg text-center'>
-        {error || 'Data tidak ditemukan'}
+      <div className='bg-destructive/10 border border-destructive/20 text-destructive p-6 rounded-xl flex items-center justify-center gap-3 mt-10'>
+        <AlertCircle className='size-5' />
+        <span className='font-medium'>{error}</span>
+      </div>
+    );
+  }
+
+  if (!thread) {
+    return (
+      <div className='bg-slate-100 border border-slate-200 text-slate-500 p-10 rounded-xl text-center mt-10'>
+        <Hash className='size-10 mx-auto mb-3 opacity-20' />
+        <p className='font-bold text-lg'>Detail diskusi tidak ditemukan</p>
+        <p className='text-sm'>
+          Pastikan ID diskusi yang Anda cari sudah benar.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className='bg-slate-50/50 min-h-screen'>
+    <div className='bg-slate-50/50 min-h-screen pb-10'>
       <Card className='border-none shadow-sm ring-1 ring-slate-200 overflow-hidden'>
         <CardHeader className='bg-white p-6 sm:p-8 pb-4 space-y-6'>
           <div className='flex items-center justify-between'>
@@ -90,7 +110,7 @@ export function ThreadDetail() {
 
         <CardContent className='bg-white p-6 sm:p-8 pt-8'>
           <div
-            className='text-slate-700 text-lg leading-relaxed space-y-4 wrap-break-word'
+            className='text-slate-700 text-lg leading-relaxed space-y-4 break-words'
             dangerouslySetInnerHTML={{ __html: thread.body }}
           />
         </CardContent>
@@ -104,44 +124,50 @@ export function ThreadDetail() {
           <h2 className='text-xl font-bold text-slate-800'>
             Komentar{' '}
             <span className='text-slate-400 font-normal ml-1'>
-              ({comments.length})
+              ({comments?.length || 0})
             </span>
           </h2>
         </div>
 
         <div className='space-y-4'>
-          {comments.map((comment) => (
-            <Card
-              key={comment.id}
-              className='border-none shadow-none bg-white ring-1 ring-slate-200'
-            >
-              <CardContent className='p-5 flex gap-4'>
-                <Avatar className='h-9 w-9 border-none shrink-0'>
-                  <AvatarImage
-                    src={comment.owner.avatar}
-                    alt={comment.owner.name}
-                  />
-                  <AvatarFallback className='bg-slate-100 text-slate-500 text-xs'>
-                    {comment.owner.name.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className='flex flex-col gap-2 w-full'>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-sm font-bold text-slate-800'>
-                      {comment.owner.name}
-                    </span>
-                    <span className='text-[10px] text-muted-foreground font-medium uppercase'>
-                      {postedAt(comment.createdAt)}
-                    </span>
+          {comments && comments.length > 0 ? (
+            comments.map((comment) => (
+              <Card
+                key={comment.id}
+                className='border-none shadow-none bg-white ring-1 ring-slate-200'
+              >
+                <CardContent className='p-5 flex gap-4'>
+                  <Avatar className='h-9 w-9 border-none shrink-0'>
+                    <AvatarImage
+                      src={comment.owner.avatar}
+                      alt={comment.owner.name}
+                    />
+                    <AvatarFallback className='bg-slate-100 text-slate-500 text-xs'>
+                      {comment.owner.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className='flex flex-col gap-2 w-full'>
+                    <div className='flex items-center justify-between'>
+                      <span className='text-sm font-bold text-slate-800'>
+                        {comment.owner.name}
+                      </span>
+                      <span className='text-[10px] text-muted-foreground font-medium uppercase'>
+                        {postedAt(comment.createdAt)}
+                      </span>
+                    </div>
+                    <div
+                      className='text-sm text-slate-600 leading-relaxed break-words'
+                      dangerouslySetInnerHTML={{ __html: comment.content }}
+                    />
                   </div>
-                  <div
-                    className='text-sm text-slate-600 leading-relaxed'
-                    dangerouslySetInnerHTML={{ __html: comment.content }}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <p className='text-center text-muted-foreground py-10 bg-white rounded-lg border border-dashed'>
+              Belum ada komentar dalam diskusi ini.
+            </p>
+          )}
         </div>
 
         <div className='pt-4'>
