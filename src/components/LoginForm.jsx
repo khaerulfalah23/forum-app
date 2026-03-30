@@ -19,14 +19,14 @@ const loginSchema = z.object({
 });
 
 export function LoginForm({ onLogin, isLoading }) {
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm({
-  //   resolver: zodResolver(loginSchema),
-  //   defaultValues: { email: '', password: '' },
-  // });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
 
   return (
     <form onSubmit={handleSubmit(onLogin)} className='space-y-5'>
